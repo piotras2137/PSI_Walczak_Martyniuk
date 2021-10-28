@@ -1,4 +1,4 @@
-
+# Kacper Walczak 155621
 class Data(object):
     def __repr__(self):
         return 'ząb'
