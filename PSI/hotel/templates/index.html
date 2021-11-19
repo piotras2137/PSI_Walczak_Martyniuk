@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=i, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    table, th, td{
+        border-style:solid;
+        border-radius: 1px;
+        border-collapse: collapse;
+    }
+</style>
+<body>
+    {% if klienci %}
+    <p>klienci</p>
+    <table>
+        <tr>
+            <td>id klienta</td>
+            <td>imie</td>
+            <td>nazwisko</td>
+            <td>email</td>
+            <td>telefon</td>
+            <td>nr dowodu</td>
+        </tr>
+        {% for klient in klienci %}
+        <tr>
+            <td>{{ klient.id }}</td>
+            <td>{{ klient.imie }}</td>
+            <td>{{ klient.nazwisko }}</td>
+            <td>{{ klient.email }}</td>
+            <td>{{ klient.telefon }}</td>
+            <td>{{ klient.nrDowodu }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    {% if pokoje %}
+    <p>pokoje</p>
+    <table>
+        <tr>
+            <td>id pokoju</td>
+            <td>nr pokoju</td>
+            <td>rodzaj pokoju</td>
+            <td>cena za dobe</td>
+        </tr>
+    {% for pokoj in pokoje %}
+    <tr>
+        <td>{{ pokoj.id }}</td>
+        <td>{{ pokoj.nrPokoju }}</td>
+        <td>{{ pokoj.rodzajPokoju }}</td>
+        <td>{{ pokoj.cenaZaDobe }} zł</td>
+    </tr>
+    {% endfor %}
+    </table>
+    {% endif %}
+
+    {% if rezerwacje %}
+    <p>rezerwacje</p>
+    <table>
+        <tr>
+            <td>id rezerwacji</td>
+            <td>id klienta</td>
+            <td>imie i nazwisko klienta</td>
+            <td>data rozpoczecia</td>
+            <td>data zakonczenia</td>
+            <td>id pokojow</td>
+        </tr>
+    {% for rezerwacja in rezerwacje %}
+    <tr>
+        <td>{{ rezerwacja.id }}</td>
+        <td>{{ rezerwacja.idKlienta.id }}</td>
+        <td>{{ rezerwacja.idKlienta.imie }}
+        {{ rezerwacja.idKlienta.nazwisko }}</td>
+        <td>{{ rezerwacja.dataRozpoczecia }}</td>
+        <td>{{ rezerwacja.dataZakonczenia }}</td>
+        <td>
+        {% for pokoj in rezerwacja.idPokoju.all %}
+        {{ pokoj.id }} ,  
+        {% endfor %}
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+    {% endif %}
+</body>
+
+</html>
