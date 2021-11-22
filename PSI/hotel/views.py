@@ -9,7 +9,7 @@ def index(request):
     """View for main page/index."""
     klienci = Customer.objects.all()
     pokoje = Room.objects.all()
-    rezerwacje = Rezerwacja.objects.all()
+    rezerwacje = Reservation.objects.all()
     template = loader.get_template('index.html')
     context = {
         'klienci':klienci,
