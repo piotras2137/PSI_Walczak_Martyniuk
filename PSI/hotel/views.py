@@ -7,8 +7,8 @@ from .models import *
 
 def index(request):
     """View for main page/index."""
-    klienci = Klient.objects.all()
-    pokoje = Pokoj.objects.all()
+    klienci = Customer.objects.all()
+    pokoje = Room.objects.all()
     rezerwacje = Rezerwacja.objects.all()
     template = loader.get_template('index.html')
     context = {

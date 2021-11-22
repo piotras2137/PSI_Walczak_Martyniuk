@@ -8,12 +8,15 @@
     <title>Document</title>
 </head>
 <style>
-    table, th, td{
-        border-style:solid;
+    table,
+    th,
+    td {
+        border-style: solid;
         border-radius: 1px;
         border-collapse: collapse;
     }
 </style>
+
 <body>
     {% if klienci %}
     <p>klienci</p>
@@ -29,11 +32,11 @@
         {% for klient in klienci %}
         <tr>
             <td>{{ klient.id }}</td>
-            <td>{{ klient.imie }}</td>
-            <td>{{ klient.nazwisko }}</td>
+            <td>{{ klient.first_name }}</td>
+            <td>{{ klient.second_name }}</td>
             <td>{{ klient.email }}</td>
-            <td>{{ klient.telefon }}</td>
-            <td>{{ klient.nrDowodu }}</td>
+            <td>{{ klient.phone_number }}</td>
+            <td>{{ klient.personal_id }}</td>
         </tr>
         {% endfor %}
     </table>
@@ -48,14 +51,14 @@
             <td>rodzaj pokoju</td>
             <td>cena za dobe</td>
         </tr>
-    {% for pokoj in pokoje %}
-    <tr>
-        <td>{{ pokoj.id }}</td>
-        <td>{{ pokoj.nrPokoju }}</td>
-        <td>{{ pokoj.rodzajPokoju }}</td>
-        <td>{{ pokoj.cenaZaDobe }} zł</td>
-    </tr>
-    {% endfor %}
+        {% for pokoj in pokoje %}
+        <tr>
+            <td>{{ pokoj.id }}</td>
+            <td>{{ pokoj.room_number }}</td>
+            <td>{{ pokoj.room_type }}</td>
+            <td>{{ pokoj.day_price }} zł</td>
+        </tr>
+        {% endfor %}
     </table>
     {% endif %}
 
@@ -70,21 +73,21 @@
             <td>data zakonczenia</td>
             <td>id pokojow</td>
         </tr>
-    {% for rezerwacja in rezerwacje %}
-    <tr>
-        <td>{{ rezerwacja.id }}</td>
-        <td>{{ rezerwacja.idKlienta.id }}</td>
-        <td>{{ rezerwacja.idKlienta.imie }}
-        {{ rezerwacja.idKlienta.nazwisko }}</td>
-        <td>{{ rezerwacja.dataRozpoczecia }}</td>
-        <td>{{ rezerwacja.dataZakonczenia }}</td>
-        <td>
-        {% for pokoj in rezerwacja.idPokoju.all %}
-        {{ pokoj.id }} ,  
+        {% for rezerwacja in rezerwacje %}
+        <tr>
+            <td>{{ rezerwacja.id }}</td>
+            <td>{{ rezerwacja.id_customer.id }}</td>
+            <td>{{ rezerwacja.id_customer.first_name }}
+                {{ rezerwacja.id_customer.second_name }}</td>
+            <td>{{ rezerwacja.start_date }}</td>
+            <td>{{ rezerwacja.end_date }}</td>
+            <td>
+            {% for pokoj in rezerwacja.id_room.all %}
+            {{ pokoj.id }} ,
+            {% endfor %}
+            </td>
+        </tr>
         {% endfor %}
-        </td>
-    </tr>
-    {% endfor %}
     </table>
     {% endif %}
 </body>
