@@ -24,7 +24,7 @@ class Room(models.Model):
     bed_amount = models.IntegerField()
 
 
-class Rezerwacja(models.Model):
+class Reservation(models.Model):
     id_customer = models.ForeignKey(Customer, on_delete=CASCADE)
     id_room = models.ManyToManyField(Room)
     start_date = models.DateTimeField(auto_now=False)
