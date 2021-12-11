@@ -1,6 +1,7 @@
-from re import L
+import re
 from rest_framework import fields, serializers
 from .models import *
+from datetime import *
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,13 +9,39 @@ class CustomerSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'second_name', 'phone_number', 'email', 'personal_id']
 
 
+    def validate_email(self, value):
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+
+        if not (re.fullmatch(regex,value)):
+            raise serializers.ValidationError('email is not valid')
+        
+        return value
+
+
+    def create(self, validated_data):
+        return Customer.objects.create(**validated_data)
+
+
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ['id', 'room_number', 'room_type', 'day_price', 'bed_amount']
+
+    
+    def validate_day_price(self, value):
+        if value<=0:
+            raise serializers.ValidationError('day price should be higher than zero')
+
+        return value
+
+    def create(self, validated_data):
+        return Room.objects.create(**validated_data)
 
 
 class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date']
+    
+    def create(self, validated_data):
+        return Reservation.objects.create(**validated_data)
