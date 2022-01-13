@@ -9,6 +9,9 @@ class Customer(models.Model):
     email = models.CharField(max_length=64)
     personal_id = models.CharField(max_length=12)
 
+    def __str__(self):
+        return str(self.pk)+' '+str(self.first_name)+' '+str(self.second_name)
+
 
 class Room(models.Model):
     choices = (

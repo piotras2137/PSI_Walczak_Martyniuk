@@ -34,6 +34,13 @@ class RoomSerializer(serializers.ModelSerializer):
 
         return value
 
+    
+    def validate_bed_amount(self, value):
+        if value<1:
+            raise serializers.ValidationError('bed amount should be at least one')
+
+        return value
+
     def create(self, validated_data):
         return Room.objects.create(**validated_data)
 
@@ -42,6 +49,17 @@ class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date']
+
+
+class ReservationHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
+    id_customer = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='second_name'
+     )
+
+    id_room = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='room-detail')
     
-    def create(self, validated_data):
-        return Reservation.objects.create(**validated_data)
+    class Meta:
+        model = Reservation
+        fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date',]
