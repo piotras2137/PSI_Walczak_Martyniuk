@@ -37,3 +37,30 @@ class CustomerTests(APITestCase):
         assert Customer.objects.count() == 1
         assert Customer.objects.get().first_name == new_first_name
         assert Customer.objects.get().second_name == new_second_name
+
+
+class RoomTests(APITestCase):
+    def create_room(self, room_number, room_type, day_price, bed_amount, client):
+        url = reverse('rooms')
+        data = {
+            'room_number':room_number, 
+            'room_type':room_type,
+            'day_price':day_price, 
+            'bed_amount':bed_amount, 
+        }
+        response = client.post(url, data, format='json')
+        return response
+
+    def test_post_and_get_room(self):
+        user = User.objects.create_superuser('admin', 'admin@admin.admin', 'admin123')
+        client = APIClient()
+        client.login(username='admin', password='admin123')
+        new_room_number = 1
+        new_room_type='apartament'
+        new_day_price = 150
+        new_bed_amount = 1
+        response = self.create_room(new_room_number, new_room_type, new_day_price, new_bed_amount, client)
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Room.objects.count() == 1
+        assert Room.objects.get().room_type == new_room_type
+        assert Room.objects.get().room_number == new_room_number
