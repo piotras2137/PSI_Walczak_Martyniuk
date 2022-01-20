@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models.deletion import CASCADE
-from sympy import true
 
 
 class Customer(models.Model):

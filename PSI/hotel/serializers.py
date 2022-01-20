@@ -46,6 +46,12 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class ReservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reservation
+        fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date']
+
+
+class ReservationDetailSerializer(serializers.ModelSerializer):
     daycost = serializers.SerializerMethodField('full_price')
     totalcost = serializers.SerializerMethodField('whole_price')
     def full_price(self, reservation):
@@ -70,7 +76,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date', 'daycost', 'totalcost']
+        fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date','daycost', 'totalcost']
 
 
 class ReservationHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):

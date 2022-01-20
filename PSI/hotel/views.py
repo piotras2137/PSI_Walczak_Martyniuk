@@ -191,7 +191,7 @@ class ReservationList(generics.ListAPIView):
 class Reservationdetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Reservation.objects.all()
-    serializer_class = ReservationSerializer
+    serializer_class = ReservationDetailSerializer
 
 class ReportList(generics.ListCreateAPIView):
     queryset = Report.objects.all()
