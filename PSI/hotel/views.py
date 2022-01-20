@@ -25,6 +25,7 @@ from rest_framework import filters
 
 from django_filters import DateTimeFilter, NumberFilter, Filter, AllValuesFilter
 from django_filters.rest_framework import FilterSet
+from rest_framework import permissions
 
 
 import datetime
@@ -39,6 +40,7 @@ def api_root(request, format=None):
         'room list': reverse('room list', request=request, format=format),
         'reservations': reverse('reservations', request=request, format=format),
         'reservation list': reverse('reservation list', request=request, format=format),
+        'reports':reverse('reports', request=request, format=format), 
     })
 
 
@@ -84,6 +86,7 @@ class GenericCustomerList(generics.ListCreateAPIView):
 
 
 class Customerdetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = CustomerSerializer
     queryset = Customer.objects.all()
 
@@ -128,9 +131,13 @@ class GenericRoomList(generics.ListCreateAPIView):
                      'day_price', 'bed_amount', 'room_number']
     ordering_fields = ['room_type',
                        'day_price', 'bed_amount']
+    
+    def perform_create(self, serializer):
+        return serializer.save(owner=self.request.user)
 
 
 class Roomdetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
     name = 'room-detail'
@@ -155,7 +162,7 @@ class GenericReservationList(generics.ListCreateAPIView):
         data = request.data
         customer = Customer.objects.get(pk=data['id_customer'])
         new_reservation = Reservation.objects.create(
-            id_customer=customer, start_date=data['end_date'], end_date=data['end_date'])
+            id_customer=customer, start_date=data['start_date'], end_date=data['end_date'], owner=self.request.user)
         new_reservation.save()
         for id_room in data['id_room']:
             room = Room.objects.get(pk=id_room)
@@ -163,6 +170,7 @@ class GenericReservationList(generics.ListCreateAPIView):
 
         serializer = ReservationSerializer(new_reservation)
         return Response(serializer.data)
+
     filter_class = ReservationFilter
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
@@ -181,5 +189,25 @@ class ReservationList(generics.ListAPIView):
 
 
 class Reservationdetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
+
+class ReportList(generics.ListCreateAPIView):
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        new_report = Report.objects.create(owner=self.request.user)
+        new_report.save()
+        for i in data['reservations']:
+            reservation = Reservation.objects.get(pk=i)
+            new_report.reservations.add(reservation)
+        new_report.save()
+        serializer = ReportSerializer(new_report)
+        return Response(serializer.data)
+
+class ReportDetail(generics.RetrieveAPIView):
+    serializer_class = ReportDetailedSerializer
+    queryset = Report.objects.all()

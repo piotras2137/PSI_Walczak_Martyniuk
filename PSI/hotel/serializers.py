@@ -46,9 +46,31 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class ReservationSerializer(serializers.ModelSerializer):
+    daycost = serializers.SerializerMethodField('full_price')
+    totalcost = serializers.SerializerMethodField('whole_price')
+    def full_price(self, reservation):
+        rooms = reservation.id_room.all()
+        total = 0
+        for room in rooms:
+            total += room.day_price
+
+        return total
+
+    def whole_price(self, reservation):
+        rooms = reservation.id_room.all()
+        total = 0
+        for i in rooms:
+            total += i.day_price
+
+        d1 = reservation.start_date
+        d2 = reservation.end_date
+
+        return total * abs((d2 - d1).days)
+
+
     class Meta:
         model = Reservation
-        fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date']
+        fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date', 'daycost', 'totalcost']
 
 
 class ReservationHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
@@ -63,3 +85,82 @@ class ReservationHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Reservation
         fields = ['id', 'id_customer', 'id_room', 'start_date', 'end_date',]
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = ['id','reservations']
+
+
+
+class ReportDetailedSerializer(serializers.ModelSerializer):
+    reservation_count = serializers.SerializerMethodField('reservationcount')
+    total_price = serializers.SerializerMethodField('totalprice')
+    total_rooms = serializers.SerializerMethodField('totalrooms')
+    avg_price = serializers.SerializerMethodField('avgprice')
+    avg_rooms = serializers.SerializerMethodField('avgrooms')
+    unique_customers = serializers.SerializerMethodField('uniquecustomers')
+
+    def reservationcount(self, report):
+        return report.reservations.count()
+
+    def whole_price(self,reservation):
+        rooms = reservation.id_room.all()
+        total = 0
+        for i in rooms:
+            total += i.day_price
+
+        d1 = reservation.start_date
+        d2 = reservation.end_date
+
+        return total * abs((d2 - d1).days)
+
+    def totalprice(self, report):
+        totalprice = 0 
+        reservations = report.reservations.all() 
+        for i in reservations:
+            totalprice+=self.whole_price(i)
+        return totalprice
+
+    def totalrooms(self, report):
+        totalrooms = 0 
+        reservations = report.reservations.all() 
+        for i in reservations:
+            totalrooms+= i.id_room.count()
+        return totalrooms
+
+    def avgrooms(self, report):
+        totalrooms = 0 
+        reservations = report.reservations.all() 
+        for i in reservations:
+            totalrooms+= i.id_room.count()
+        return totalrooms / reservations.count()
+    
+    def avgprice(self, report):
+        totalprice = 0 
+        reservations = report.reservations.all() 
+        for i in reservations:
+            totalprice+=self.whole_price(i)
+        return totalprice / report.reservations.count()
+
+
+    def uniquecustomers(self, report):
+        uniquecustomer = 0 
+        customers = []
+        reservations = report.reservations.all() 
+        for i in reservations:
+            customer = i.id_customer
+            stop = False
+            for i in customers:
+                if(i == customer):
+                    stop = True
+            if stop == False:
+                customers.append(customer)
+                uniquecustomer+=1
+
+        return uniquecustomer
+
+    class Meta:
+        model = Report
+        fields = ['id','owner', 'reservations', 'reservation_count', 'total_price', 'total_rooms',  'avg_price', 'avg_rooms', 'unique_customers']

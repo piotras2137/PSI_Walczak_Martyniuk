@@ -14,8 +14,10 @@ urlpatterns = [
     path('reservationlist/', views.ReservationList.as_view(),
          name='reservation list'),
     
+    path('reports/', views.ReportList.as_view(), name='reports'),
+
     path('customer/<int:pk>', views.Customerdetail.as_view(), name='customer detail'),
     path('room/<int:pk>', views.Roomdetail.as_view(), name='room-detail'), 
     path('reservation/<int:pk>', views.Reservationdetail.as_view(), name='reservation detail'),
-
+    path('report/<int:pk>', views.ReportDetail.as_view(), name='report'),
 ]
