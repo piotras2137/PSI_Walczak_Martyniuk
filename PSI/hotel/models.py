@@ -41,6 +41,7 @@ class Reservation(models.Model):
     def __str__(self):
         return str(self.pk)+' '+str(self.id_customer)+' '+str(self.start_date)+' '+str(self.end_date)
 
+
 class Report(models.Model):
     reservations = models.ManyToManyField(Reservation)
     owner = models.ForeignKey('auth.User', on_delete=CASCADE, blank=True, null=True)

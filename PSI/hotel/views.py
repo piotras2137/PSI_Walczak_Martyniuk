@@ -5,10 +5,10 @@ from django import template
 from django.http import HttpResponse
 from django.template import loader
 from rest_framework.serializers import Serializer
-from .models import *
+from .models import Customer, Report, Reservation, Room
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import *
+from .serializers import CustomerSerializer, RoomSerializer, ReservationSerializer, ReservationDetailSerializer, ReportDetailedSerializer,ReservationHyperlinkedSerializer,  ReportSerializer
 from rest_framework import status
 from rest_framework import generics
 from rest_framework import pagination
@@ -40,7 +40,7 @@ def api_root(request, format=None):
         'room list': reverse('room list', request=request, format=format),
         'reservations': reverse('reservations', request=request, format=format),
         'reservation list': reverse('reservation list', request=request, format=format),
-        'reports':reverse('reports', request=request, format=format), 
+        'reports': reverse('reports', request=request, format=format),
     })
 
 
@@ -131,7 +131,7 @@ class GenericRoomList(generics.ListCreateAPIView):
                      'day_price', 'bed_amount', 'room_number']
     ordering_fields = ['room_type',
                        'day_price', 'bed_amount']
-    
+
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
 
@@ -193,6 +193,7 @@ class Reservationdetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationDetailSerializer
 
+
 class ReportList(generics.ListCreateAPIView):
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
@@ -207,6 +208,7 @@ class ReportList(generics.ListCreateAPIView):
         new_report.save()
         serializer = ReportSerializer(new_report)
         return Response(serializer.data)
+
 
 class ReportDetail(generics.RetrieveAPIView):
     serializer_class = ReportDetailedSerializer
