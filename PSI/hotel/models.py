@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.deletion import CASCADE
+from sympy import true
 
 
 class Customer(models.Model):
@@ -8,6 +9,9 @@ class Customer(models.Model):
     phone_number = models.CharField(max_length=12)
     email = models.CharField(max_length=64)
     personal_id = models.CharField(max_length=12)
+
+    def __str__(self):
+        return str(self.pk)+' '+str(self.first_name)+' '+str(self.second_name)
 
 
 class Room(models.Model):
@@ -22,10 +26,25 @@ class Room(models.Model):
     room_type = models.CharField(max_length=64, choices=choices)
     day_price = models.IntegerField()
     bed_amount = models.IntegerField()
+    owner = models.ForeignKey('auth.User', on_delete=CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.pk)+', type: '+str(self.room_type)+', room number: '+str(self.room_number)+', day price: '+str(self.day_price)+', bed amount: '+str(self.bed_amount)
 
 
 class Reservation(models.Model):
     id_customer = models.ForeignKey(Customer, on_delete=CASCADE)
     id_room = models.ManyToManyField(Room)
-    start_date = models.DateTimeField(auto_now=False)
-    end_date = models.DateTimeField(auto_now=False)
+    start_date = models.DateField(auto_now=False)
+    end_date = models.DateField(auto_now=False)
+    owner = models.ForeignKey('auth.User', on_delete=CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.pk)+' '+str(self.id_customer)+' '+str(self.start_date)+' '+str(self.end_date)
+
+class Report(models.Model):
+    reservations = models.ManyToManyField(Reservation)
+    owner = models.ForeignKey('auth.User', on_delete=CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.pk)+' '+str(self.owner)
