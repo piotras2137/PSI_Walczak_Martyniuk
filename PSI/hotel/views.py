@@ -8,7 +8,7 @@ from rest_framework.serializers import Serializer
 from .models import Customer, Report, Reservation, Room
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import CustomerSerializer, RoomSerializer, ReservationSerializer, ReservationDetailSerializer, ReportDetailedSerializer,ReservationHyperlinkedSerializer,  ReportSerializer
+from .serializers import CustomerSerializer, RoomSerializer, ReservationSerializer, ReservationDetailSerializer, ReportDetailedSerializer, ReservationHyperlinkedSerializer,  ReportSerializer
 from rest_framework import status
 from rest_framework import generics
 from rest_framework import pagination
@@ -161,8 +161,16 @@ class GenericReservationList(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         data = request.data
         customer = Customer.objects.get(pk=data['id_customer'])
-        new_reservation = Reservation.objects.create(
-            id_customer=customer, start_date=data['start_date'], end_date=data['end_date'], owner=self.request.user)
+        dateformat = '%Y-%m-%d'
+        d1 = datetime.datetime.strptime(data['start_date'], dateformat)
+        d2 = datetime.datetime.strptime(data['end_date'], dateformat)
+        if d1 >= d2:
+            new_reservation = Reservation.objects.create(
+                id_customer=customer, start_date=data['end_date'], end_date=data['start_date'], owner=self.request.user)
+        else:
+            new_reservation = Reservation.objects.create(
+                id_customer=customer, start_date=data['start_date'], end_date=data['end_date'], owner=self.request.user)
+
         new_reservation.save()
         for id_room in data['id_room']:
             room = Room.objects.get(pk=id_room)
